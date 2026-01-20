@@ -1,0 +1,16 @@
+# MATLAB autosave files
+*.asv
+
+# MATLAB session info
+*.autosave
+
+# Compiled MEX files
+*.mex*
+
+# Temporary files
+*.tmp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
