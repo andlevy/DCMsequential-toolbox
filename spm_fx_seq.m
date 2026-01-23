@@ -25,7 +25,7 @@ end
 % model or node-specific state equations of motions
 %--------------------------------------------------------------------------
 fx{1} = @spm_fx_erp;                     % ERP model
-fx{2} = @spm_fx_cmc;                     % CMC model
+fx{2} = @spm_fx_cmc_2017;                     % CMC model
 fx{3} = @spm_fx_bgt;                     % basal ganglia circuit
 fx{4} = @spm_fx_mmc;                     % motor micro circuit
 fx{5} = @spm_fx_ban3;                     % heart-rate micro circuit
