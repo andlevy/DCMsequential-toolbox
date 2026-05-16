@@ -106,13 +106,6 @@ for i = 1:length(X)
             if isfield(Q.int{j},'B') && ~isempty(Q.int{j}.B) && iscell(Q.int{j}.B)
 
                 for k = 1:numel(Q.int{j}.B)
-                    % if isempty(Q.int{j}.B{k})
-                    %     Q.int{j}.B{k} = spm_zeros(Q.int{j}.G{k});
-                    % end
-                    % 
-                    % if numel(Q.int{j}.B{k}) < numel(Q.int{j}.G{k})
-                    %     haha = 1;
-                    % end
                     Q.int{j}.G{k} = Q.int{j}.G{k} + X(i)*Q.int{j}.B{k};
                 end
 
@@ -127,12 +120,12 @@ for i = 1:length(X)
                 if isfield(Q.int{j},'B') && ~isempty(Q.int{j}.B)
                     Q.int{j}.G = Q.int{j}.G + X(i)*Q.int{j}.B;
                 else
-                    if iscell(P.B{i})
-                        G = {};
+                    if iscell(P.B{i}) && isfield(Q.int{j},'G') && ~iscell(Q.int{j}.G)
+                    
                         for k = 1:numel(P.B)
-                            G{k}(:,1) = Q.int{j}.G(:,1) + X(i)*P.B{k}{i}(j,j);
+                             Q.int{j}.G(:,1) = Q.int{j}.G(:,1) + X(i)*P.B{k}{i}(j,j);
                         end
-                        Q.int{j}.G = G;
+
                     else
                         Q.int{j}.G(:,1) = Q.int{j}.G(:,1) + X(i)*P.B{i}(j,j);
                     end

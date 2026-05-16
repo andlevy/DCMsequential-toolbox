@@ -143,15 +143,13 @@ if ~isempty(nmm) && numel(unique(nmm)) > 1
     for n = 1:numel(nmm)
         switch lower(nmm{n})
             case 'cmc'
-                col_nmm(end+1,:) = [.95 .85 1];%[.80 .88 1];
-            case 'erp'
-                col_nmm(end+1,:) = [.85 1 .85];
+                col_nmm(end+1,:) = [0.95 0.80 0.95]; % Lavender/Pink
             case 'bgt'
-                col_nmm(end+1,:) = [1.00 0.92 0.80];
+                col_nmm(end+1,:) = [1.00 0.95 0.80]; % Pale Gold
             case 'mmc'
-                col_nmm(end+1,:) = [.85 1 .85];%[1 .9 .75];
-            case 'ban'
-                col_nmm(end+1,:) = [.85 .3 .15];
+                col_nmm(end+1,:) = [0.80 1.00 0.80]; % Pale Green
+            case 'bcn'
+                col_nmm(end+1,:) = [0.80 0.85 1.00]; % Periwinkle Blue
         end
     end
 
@@ -396,7 +394,7 @@ if nargin > 9 && ~isempty(fu)
     % Midpoint of the arrow, offset slightly perpendicular
     mid   = (p0 + p1)/2;
     perp  = [-u(2), u(1)];         % perpendicular to arrow
-    offset = 0.3 * r;              % tweak spacing
+    offset = 0.6 * r;              % tweak spacing
     pos   = mid + perp*offset;
     pos   = pos - [2 0];
 
@@ -515,13 +513,12 @@ if show_nmm
     nmml = lower(nmm(:));
     [uniqNames, ia] = unique(nmml, 'stable');
 
-    % colour palette consistent with node fill mapping
-    % adjust here if you change node fill colours
     getCol = @(name) switchlower(name, ...
-        'cmc', [0.93 0.85 1.00], ...  % light blue
-        'erp', [0.80 0.88 1.00], ...  % light green
-        'bgt', [1.00 0.92 0.80], ...  % light orange
-        'mmc',[0.85 1.00 0.85] , ...  % light violet
+        'cmc', [0.95 0.80 0.95], ...  % light blue
+        'erp', [0.85 1 .85],     ...  % light green
+        'bgt', [1.00 0.95 0.80], ...  % light orange
+        'mmc',[0.80 1.00 0.80] , ...  % light violet
+        'bcn',[0.80 0.85 1.00] , ...
         [0.85 0.85 0.85]);             % default grey
 
     for t = 1:numel(uniqNames)

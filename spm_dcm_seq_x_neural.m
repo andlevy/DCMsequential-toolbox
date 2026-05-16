@@ -185,9 +185,9 @@ switch lower(model)
         
         f  = 'spm_fx_mmc';
 
-        % Heart-rate microcircuit
-        %======================================================================
-    case{'ban'}
+        % Brainstem-cardiac network
+        %==================================================================
+    case{'bcn'}
 
         % inital states
         %------------------------------------------------------------------
@@ -195,7 +195,7 @@ switch lower(model)
         m  = 15;                                       % number of states
         x  = sparse(n,m);
 
-        f  = 'spm_fx_ban';
+        f  = 'spm_fx_bcn';
 
     case{'cvp'}
 

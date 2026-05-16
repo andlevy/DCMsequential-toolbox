@@ -158,8 +158,8 @@ for i = 1:numel(model)
             pE.J{end + 1} = sparse(1,[1 3 7],[.2 .2 .6],1,8);   % 8 states
             pC.J{end + 1} = sparse(1,8);
 
-        case {'BAN'}
-            pE.J{end + 1} = sparse(1,15);   % 16 states
+        case {'BCN'}
+            pE.J{end + 1} = sparse(1,15);   % 15 states
             pC.J{end + 1} = sparse(1,15);
 
         case{'NULL'}

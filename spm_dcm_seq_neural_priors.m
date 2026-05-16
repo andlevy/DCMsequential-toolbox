@@ -107,7 +107,6 @@ if nargin==2 && isstruct(A) && isfield(A,'event')
         for s = 1:numel(ext_var)
             pE.(ext_var{s}){m} = mE.(ext_var{s});
             pC.(ext_var{s}){m} = mC.(ext_var{s});
-
         end
 
         % Intrinsic
@@ -153,6 +152,7 @@ if isstruct(model)
     % intrinsic parameters
     %----------------------------------------------------------------------
     for i = 1:numel(model)
+
         [iE,iC] = spm_dcm_seq_neural_priors({0,0,0,0},{},0,model(i).source);
 
         % remove extrinsic parameters
@@ -176,7 +176,6 @@ if isstruct(model)
             if numel(iE.B) > numel(iE.G)
                 iE.G = iE.B;
                 iC.G = iE.G + iC.G(1);
-            
             end
 
         end
@@ -228,7 +227,7 @@ switch lower(model)
 
 
         % linear David et al model (Canonical microcircuit)
-        %======================================================================
+        %==================================================================
     case{'cmc'}
 
         % prior moments on parameters
@@ -236,7 +235,7 @@ switch lower(model)
         [pE,pC] = spm_cmc_priors(A,B,C);
 
         % linear David et al model (Canonical microcircuit with plasticity)
-        %======================================================================
+        %==================================================================
     case{'tfm'}
 
         % prior moments on parameters
@@ -245,7 +244,7 @@ switch lower(model)
 
 
         % linear David et al model (linear in states)  - with self-inhibition
-        %======================================================================
+        %==================================================================
     case{'lfp'}
 
         % prior moments on parameters
@@ -254,7 +253,7 @@ switch lower(model)
 
 
         % Neural mass model (nonlinear in states)
-        %======================================================================
+        %==================================================================
     case{'nmm','mfm'}
 
         % prior moments on parameters
@@ -262,7 +261,7 @@ switch lower(model)
         [pE,pC] = spm_nmm_priors(A,B,C);
 
         % Neural mass model (nonlinear in states)
-        %======================================================================
+        %==================================================================
     case{'nmda'}
 
         % prior moments on parameters
@@ -270,7 +269,7 @@ switch lower(model)
         [pE,pC] = spm_nmda_priors(A,B,C);
 
         % Canonical neural mass model (nonlinear in states)
-        %======================================================================
+        %==================================================================
     case{'cmm'}
 
         % prior moments on parameters
@@ -278,7 +277,7 @@ switch lower(model)
         [pE,pC] = spm_cmm_priors(A,B,C);
 
         % Canonical neural mass model with NMDA channels(nonlinear in states)
-        %======================================================================
+        %==================================================================
     case{'cmm_nmda'}
 
         % prior moments on parameters
@@ -287,7 +286,7 @@ switch lower(model)
 
 
         % Neural field model (linear in states)
-        %======================================================================
+        %==================================================================
     case{'nfm'}
 
         % prior moments on parameters
@@ -296,7 +295,7 @@ switch lower(model)
 
 
         % Neural field model (linear in states)
-        %======================================================================
+        %==================================================================
     case{'bgt'}
 
         % prior moments on parameters
@@ -305,29 +304,23 @@ switch lower(model)
 
 
         % Bhatt et al model (motor microcircuit)
-        %======================================================================
+        %==================================================================
     case{'mmc'}
 
         % prior moments on parameters
         %------------------------------------------------------------------
         [pE,pC] = spm_mmc_priors(A,B,C);
     
-        % Cardiac brainstem microcircuit
-    case{'ban'}
+        % Brainstem-cardiac network
+        %==================================================================
+    case{'bcn'}
         
-      % prior moments on parameters
+        % prior moments on parameters
         %------------------------------------------------------------------
-        [pE,pC] = spm_ban_priors(A,B,C);
-
-            % Cardiovascualr Plant
-    case{'cvp'}
-        
-      % prior moments on parameters
-        %------------------------------------------------------------------
-        [pE,pC] = spm_cvp_priors(A,B,C);
+        [pE,pC] = spm_bcn_priors(A,B,C);
 
         % Null model - of Jacabian (linear in states)
-        %======================================================================
+        %==================================================================
     case{'null'}
 
         % prior moments on parameters

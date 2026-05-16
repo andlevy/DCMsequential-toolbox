@@ -6,7 +6,8 @@ function [Cp,Cg] = spm_dcm_priorvar(priorvar,pV,gV)
 %   .struct       'pC' or 'gC'
 %   .fieldindices 1x1 cellstr (parameter selector, spm_fieldindices format)
 %   .scale        scalar > 0 (multiply variance)
-%   .type         string (label; optional)
+%   or
+%   .set          
 
 if nargin < 3, gV = []; end
 
@@ -27,25 +28,56 @@ end
 for i = 1:numel(priorvar)
     tgt   = lower(priorvar(i).struct);
     pname = priorvar(i).fieldindices{1};
-    scale = priorvar(i).scale;
 
-    if strcmp(tgt,'pc')
-        idx = find(strcmp(pStr, pname));
-        if ~isempty(idx)
-            pv(idx) = pv(idx) * scale;
-            fprintf('Scaled latent prior variance: %s × %.3f\n', pname, scale);
-        end
-    elseif strcmp(tgt,'gc')
-        if ~isempty(gStr)
-            idx = find(strcmp(gStr, pname));
+    if isfield(priorvar(i),'scale') && ~isempty(priorvar(i).scale)
+    
+        scale = priorvar(i).scale;
+
+        if strcmp(tgt,'pc')
+            idx = find(strcmp(pStr, pname));
             if ~isempty(idx)
-                gv(idx) = gv(idx) * scale;
-                fprintf('Scaled observer prior variance: %s × %.3f\n', pname, scale);
+                pv(idx) = pv(idx) * scale;
+                fprintf('Scaled state-space prior variance: %s × %.3f\n', pname, scale);
             end
+        elseif strcmp(tgt,'gc')
+            if ~isempty(gStr)
+                idx = find(strcmp(gStr, pname));
+                if ~isempty(idx)
+                    gv(idx) = gv(idx) * scale;
+                    fprintf('Scaled observer prior variance: %s × %.3f\n', pname, scale);
+                end
+            end
+        else
+            error('priorvar(%d).struct must be ''pC'' or ''gC''.', i);
         end
-    else
-        error('priorvar(%d).struct must be ''pC'' or ''gC''.', i);
+
+
+    elseif isfield(priorvar(i),'set') && ~isempty(priorvar(i).set)
+
+        set = priorvar(i).set;
+
+        if strcmp(tgt,'pc')
+            idx = find(strcmp(pStr, pname));
+            if ~isempty(idx)
+                pv(idx) = set;
+                fprintf('Set state-space prior variance: %s - %.3f\n', pname, set);
+            end
+        elseif strcmp(tgt,'gc')
+            if ~isempty(gStr)
+                idx = find(strcmp(gStr, pname));
+                if ~isempty(idx)
+                    gv(idx) = gv(idx) * set;
+                    fprintf('Set observer prior variance: %s - %.3f\n', pname, set);
+                end
+            end
+        else
+            error('priorvar(%d).struct must be ''pC'' or ''gC''.', i);
+        end
+
+
     end
+
+    
 end
 
 % Reconstruct outputs

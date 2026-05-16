@@ -37,10 +37,8 @@ function [DCM,dipfit] = spm_dcm_seq(DCM)
 % useful for Bayesian parameter averaging - but would not normally be
 % called upon - because prior constraints are specified by DCM.A, DCM.B,...
 %__________________________________________________________________________
-
-% Karl Friston
+% Andrew Levy
 % Copyright (C) 2005-2022 Wellcome Centre for Human Neuroimaging
-
 
 % check options (and clear persistent variables)
 %==========================================================================
@@ -48,30 +46,26 @@ drawnow
 clear spm_erp_L
 name = sprintf('DCM_%s',date);
 
-
 % Filename and options
 %--------------------------------------------------------------------------
-try, DCM.name;                         catch, DCM.name  = name;        end
-try, DCM.xU;                           catch, DCM.xU.X  = sparse(1,0); end
-try, Nm        = DCM.options.Nmodes;   catch, Nm        = 8;           end
-try, onset     = DCM.options.onset;    catch, onset     = 60;          end
-try, dur       = DCM.options.dur;      catch, dur       = 16;          end
-try, model     = DCM.options.model;    catch, model     = 'CMC';       end
-try, sequent   = DCM.options.sequent;  catch, sequent   = [];          end
-try, lock      = DCM.options.lock;     catch, lock      = 0;           end
-try, multC     = DCM.options.multiC;   catch, multC     = 0;           end
-try, symm      = DCM.options.symmetry; catch, symm      = 0;           end
-try, CVA       = DCM.options.CVA;      catch, CVA       = 0;           end
-try, Nmax      = DCM.options.Nmax;     catch, Nmax      = 64;          end
-try, DATA      = DCM.options.DATA;     catch, DATA      = 1;           end
-try, Nmax      = DCM.M.Nmax;           catch, Nmax      = Nmax;        end
-
-try, priorcorr = DCM.options.priorcorr; catch, priorcorr   = []; end
-try, priorvar  = DCM.options.priorvar;  catch, priorvar    = []; end
-
-% try, P  = DCM.options.P; catch, P     = []; end
-% try, Q  = DCM.options.Q;  catch, Q    = []; end
-
+try, DCM.name;                          catch, DCM.name  = name;        end
+try, DCM.xU;                            catch, DCM.xU.X  = sparse(1,0); end
+try, Nm        = DCM.options.Nmodes;    catch, Nm        = 8;           end
+try, onset     = DCM.options.onset;     catch, onset     = 60;          end
+try, dur       = DCM.options.dur;       catch, dur       = 16;          end
+try, model     = DCM.options.model;     catch, model     = 'CMC';       end
+try, sequent   = DCM.options.sequent;   catch, sequent   = [];          end
+try, lock      = DCM.options.lock;      catch, lock      = 0;           end
+try, multC     = DCM.options.multiC;    catch, multC     = 0;           end
+try, symm      = DCM.options.symmetry;  catch, symm      = 0;           end
+try, CVA       = DCM.options.CVA;       catch, CVA       = 0;           end
+try, Nmax      = DCM.options.Nmax;      catch, Nmax      = 64;          end
+try, DATA      = DCM.options.DATA;      catch, DATA      = 1;           end
+try, priorcorr = DCM.options.priorcorr; catch, priorcorr = [];          end
+try, priorvar  = DCM.options.priorvar;  catch, priorvar  = [];          end
+try, precision = DCM.options.precision; catch, precision = 'single';    end
+try, par       = DCM.options.parallel;  catch, par       = true;        end
+try, Nmax      = DCM.M.Nmax;            catch, Nmax      = Nmax;        end
 
 % symmetry contraints for ECD models only
 %--------------------------------------------------------------------------
@@ -82,7 +76,6 @@ if ~strcmp(DCM.options.spatial,'ECD'), symm = 0; end
 if isstruct(model) && any(ismember(DCM.options.spatial,{'IMG'}))
     DCM.options.spatial = 'ECD';
 end
-
 
 % Data and spatial model
 %==========================================================================
@@ -106,7 +99,6 @@ Nc      = size(xY.y{1},2);               % number of channels
 Nx      = size(xU.X,2);                  % number of trial-specific effects
 
 if numel(sequent)
-
     assert(all(cellfun(@(C) isequal(size(C), ...
         size(sequent.event(1).C)), {sequent.event.C})), ...
         'C sizes differ across events');
@@ -117,7 +109,6 @@ else
     Nr      = size(DCM.C,1);                 % number of sources
     Nu      = size(DCM.C,2);                 % number of exogenous inputs
 end
-
 
 % check the number of modes is greater or equal to the number of sources
 %--------------------------------------------------------------------------
@@ -131,14 +122,39 @@ else
     M.R = speye(Ns) - xY.X0*((xY.X0'*xY.X0)\xY.X0');
 end
 
-
 % Serial correlations (precision components) AR model
 %--------------------------------------------------------------------------
-xY.Q   = {spm_Q(1/2,Ns,1)};
+switch precision
+    case 'single'
+        xY.Q = {spm_Q(1/2, Ns, 1)};
+
+    case 'modality'
+        % Compute local precision block for each modality
+        nM    = numel(xY.modality);
+        Q_loc = cell(1, nM);
+        for m = 1:nM
+            switch xY.modality{m}
+                case {'EEG','MEG'}
+                    Q_loc{m} = spm_Q(1/2, Ns*Nm, 1);
+                case 'HR'
+                    Q_loc{m} = spm_Q(1/2, Ns, 1);
+            end
+        end
+
+        % Embed each local block into the full block-diagonal structure
+        Q_zero = cellfun(@(Q) sparse(size(Q,1), size(Q,2)), Q_loc, ...
+                         'UniformOutput', false);
+        for m = 1:nM
+            blocks    = Q_zero;
+            blocks{m} = Q_loc{m};
+            xY.Q{m}   = blkdiag(blocks{:});
+        end
+    otherwise
+        errorr('precision specification not recognised')
+end
 
 %-Inputs
 %==========================================================================
-
 % between-trial effects
 %--------------------------------------------------------------------------
 try
@@ -189,7 +205,6 @@ end
 
 % priors on spatial model
 %--------------------------------------------------------------------------
-% M.dipfit.model = model;
 [gE,gC]        = spm_L_seq_priors(M.dipfit,model);
 
 % Scale priors
@@ -204,8 +219,9 @@ if ~isempty(priorcorr), [pC,gC] = spm_dcm_priorcorr(priorcorr,pC,pE,gC,gE); end
 
 % hyperpriors (assuming a high signal to noise)
 %--------------------------------------------------------------------------
-hE      = 6;
-hC      = 1/128;
+nQ      = numel(xY.Q);
+hE      = 6*ones(nQ,1);
+hC      = diag(1/128*ones(nQ,1));
 
 % check for previous priors
 %--------------------------------------------------------------------------
@@ -225,11 +241,9 @@ try
     fprintf('Using specified priors (for noise precision)\n')
 end
 
-
 %-Feature selection using (canonical) eigenmodes of lead-field
 %==========================================================================
-M.U = spm_dcm_seq_channelmodes(M.dipfit,Nm,xY,CVA);
-
+[M.U,Nu] = spm_dcm_seq_channelmodes(M.dipfit,Nm,xY,CVA);
 
 % scale data features
 %--------------------------------------------------------------------------
@@ -237,10 +251,33 @@ scale    = std(spm_vec(spm_fy_erp(xY.y,M) ));
 xY.y     = spm_unvec(spm_vec(xY.y)/scale,xY.y);
 xY.scale = xY.scale/scale;
 
+% % Per-modality scaling so each modality enters inversion with std ~1
+% %--------------------------------------------------------------------------
+% nMod          = numel(M.dipfit);
+% scale_per_mod = zeros(1, nMod);
+% 
+% % Apply spm_fy_erp once to the full data to get the feature-space view
+% y_fy = spm_fy_erp(xY.y, M);
+% iu   = 0;
+% for d = 1:nMod
+%     iu = iu(end)+1:iu(end)+Nu(d);   % channel indices for this modality
+% 
+%     % Extract this modality's features across all trials/conditions
+%     y_d = cellfun(@(yi) yi(:, iu), y_fy, 'UniformOutput', false);
+%     scale_per_mod(d) = std(spm_vec(y_d));
+% 
+%     % Apply scale to this modality's channels in the raw data
+%     for i = 1:numel(xY.y)
+%         xY.y{i}(:, iu) = xY.y{i}(:, iu) / scale_per_mod(d);
+%     end
+% end
+% 
+% % Record what was done (vector now, one entry per modality)
+% xY.scale = xY.scale ./ scale_per_mod;
+
 
 % likelihood model
 %==========================================================================
-
 % Use TFM integration scheme (with plasticity) if indicated
 %--------------------------------------------------------------------------
 if isfield(M,'TFM')
@@ -249,7 +286,6 @@ elseif numel(sequent)
     IS = 'spm_gen_seq';
 else
     IS = 'spm_gen_erp';
-
 end
 
 if numel(sequent)
@@ -278,36 +314,38 @@ end
 %--------------------------------------------------------------------------
 [x,f,h] = spm_dcm_seq_x_neural(pE,model);
 
-M.FS   = 'spm_fy_erp';
-M.G    = lx;
-M.IS   = IS;
-M.f    = f;
-M.fu   = fu;
-M.su   = su;
-M.h    = h;
-M.x    = x;
-M.pE   = pE;
-M.pC   = pC;
-M.gE   = gE;
-M.gC   = gC;
-M.hE   = hE;
-M.hC   = hC;
-M.m    = Nu;
-M.n    = length(spm_vec(M.x));
-M.l    = Nc;
-M.ns   = Ns;
-M.Nmax = Nmax;
+M.FS    = 'spm_fy_erp';
+M.G     = lx;
+M.IS    = IS;
+M.f     = f;
+M.fu    = fu;
+M.su    = su;
+M.h     = h;
+M.x     = x;
+M.pE    = pE;
+M.pC    = pC;
+M.gE    = gE;
+M.gC    = gC;
+M.hE    = hE;
+M.hC    = hC;
+M.m     = Nu;
+M.n     = length(spm_vec(M.x));
+M.l     = Nc;
+M.ns    = Ns;
+M.Nmax  = Nmax;
 M.model = model;
 
 % re-intialise states
 %--------------------------------------------------------------------------
 M.x    = spm_dcm_neural_x(pE,M);
     
-
 % EM: inversion
 %==========================================================================
-[Qp,Qg,Cp,Cg,Ce,F,LE] = spm_nlsi_N_par(M,xU,xY);
-
+if par
+    [Qp,Qg,Cp,Cg,Ce,F,LE] = spm_nlsi_N_par(M,xU,xY);
+else
+    [Qp,Qg,Cp,Cg,Ce,F,LE] = spm_nlsi_N(M,xU,xY);
+end
 
 % Data ID
 %==========================================================================
@@ -321,7 +359,6 @@ else
     ID = spm_data_id(xY.y);
 end
 
-
 % Bayesian inference
 %--------------------------------------------------------------------------
 sw  = warning('off','SPM:negativeVariance');
@@ -329,12 +366,10 @@ dp  = spm_vec(Qp) - spm_vec(pE);
 Pp  = spm_unvec(1 - spm_Ncdf(0,abs(dp),diag(Cp)),Qp);
 warning(sw);
 
-
 % neuronal and sensor responses (x and y)
 %--------------------------------------------------------------------------
 L   = feval(M.G, Qg,M);                 % get gain matrix
 x   = feval(M.IS,Qp,M,xU);              % prediction (source space)
-
 
 % trial-specific responses (in mode, channel and source space)
 %--------------------------------------------------------------------------
@@ -357,7 +392,6 @@ for i = 1:Nt
     r{i} = M.R*xY.y{i}*M.U - y{i};      % residuals  (sensor space)
     K{i} = K{i}(:,j);                   % Depolarization in sources
 end
-
 
 % store estimates in DCM
 %--------------------------------------------------------------------------
@@ -386,7 +420,6 @@ DCM.options.lock     = lock;
 DCM.options.symm     = symm;
 DCM.options.analysis = 'ERP';
 
-
 % store estimates in D
 %--------------------------------------------------------------------------
 if ~iscell(M.dipfit) && strcmp(M.dipfit.type,'IMG') && DATA
@@ -398,7 +431,6 @@ if ~iscell(M.dipfit) && strcmp(M.dipfit.type,'IMG') && DATA
         SST(i) = sum(var(y{i} + r{i}));
     end
     R2    = 100*(sum(SST - SSR))/sum(SST);
-
 
     % reconstruct sources in dipole space
     %----------------------------------------------------------------------

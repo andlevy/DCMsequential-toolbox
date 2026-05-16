@@ -77,7 +77,7 @@ for i = 1:numel(model)
             pE.J{end + 1} = sparse(1,8).^0.*-32;   % 8 states
             pC.J{end + 1} = sparse(1,8);
 
-        case {'BAN'}
+        case {'BCN'}
             pE.J{end + 1} = sparse(1,15).^0.*-32;   % 8 states
             pE.J{end}(15) = 0;
             pC.J{end + 1} = sparse(1,15,1/32,1,15);

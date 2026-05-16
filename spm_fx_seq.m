@@ -25,11 +25,12 @@ end
 % model or node-specific state equations of motions
 %--------------------------------------------------------------------------
 fx{1} = @spm_fx_erp;                     % ERP model
-fx{2} = @spm_fx_cmc_2017;                     % CMC model
+fx{2} = @spm_fx_cmc_2017;                % CMC model
+% fx{2} = @spm_fx_cmc;                   % CMC model
 fx{3} = @spm_fx_bgt;                     % basal ganglia circuit
 fx{4} = @spm_fx_mmc;                     % motor micro circuit
-fx{5} = @spm_fx_ban3;                     % heart-rate micro circuit
-fx{6} = @spm_fx_cvp;                     % heart-rate micro circuit
+fx{5} = @spm_fx_bcn;                     % heart-rate micro circuit
+
 
 % indices of extrinsically coupled hidden states
 %--------------------------------------------------------------------------
@@ -45,22 +46,17 @@ afferent(3,:) = [2 6 2 6];               % targets of BGT connections (striatum 
 efferent(4,:) = [3 3 7 7];               % sources of MMC connections
 afferent(4,:) = [2 4 8 0];               % targets of MMC connections
 
-efferent(5,:) = [13 13 13 13];           % sources of BAN connections
-afferent(5,:) = [2 4 2 4];               % targets of BAN connections
-
-efferent(6,:) = [3 3 3 3];               % sources of CVP connections
-afferent(6,:) = [0 0 2 2];               % targets of CVP connections
+efferent(5,:) = [13 3 0 0];              % sources of BCN connections
+afferent(5,:) = [0 0 2 6];               % targets of BCN connections
 
 
 % sign of extrinsically coupled states
 %--------------------------------------------------------------------------
 polarity(1,:) = [1  1  1  1]; 
 polarity(2,:) = [1  1 -1 -1]; 
-% Sign(2,:) = [1  1  1  1];
 polarity(3,:) = [1  1  1  1];
 polarity(4,:) = [1  1  1  1];
 polarity(5,:) = [1  1  1  1];
-polarity(6,:) = [1  1  1 -1];
 
 % scaling of afferent extrinsic connectivity (Hz)
 %--------------------------------------------------------------------------
@@ -68,15 +64,15 @@ E(1,:) = [64 2 32 8]*1000;               % ERP connections
 E(2,:) = [64 4 64 8]*1000;               % CMC connections
 E(3,:) = [1.8 1.2 1.8 1.2]*100000;       % BGC connections
 E(4,:) = [.9 .9 .11 0]*100000;           % MMC connections
-E(5,:) = [.9 .9 1 0]*100000;                 % HMC connections
-E(6,:) = [1 1 1 1]*10000;                  % CVP connections
+% E(5,:) = [.5 1 1 .5]*100000;             % BCN connections
+% E(5,:) = [1 .5 .5 .5]*100000;             % BCN connections
+E(5,:) = [1 .5 1 .75]*100000;             % BCN connections
 
 if isfield(M,'ERP_E'); E(1,:)= M.ERP_E; end
 if isfield(M,'CMC_E'); E(2,:)= M.CMC_E; end
 if isfield(M,'BGT_E'); E(3,:)= M.BGT_E; end
 if isfield(M,'MMC_E'); E(4,:)= M.MMC_E; end
-if isfield(M,'BAN_E'); E(5,:)= M.BAN_E; end
-if isfield(M,'CVP_E'); E(6,:)= M.CVP_E; end
+if isfield(M,'BCN_E'); E(5,:)= M.BCN_E; end
 
 % intrinsic delays ms (scaling)
 %--------------------------------------------------------------------------
@@ -84,8 +80,7 @@ D(1) = 2;                                % ERP connections
 D(2) = 1;                                % CMC connections
 D(3) = 4;                                % BGT connections
 D(4) = 1;                                % MMC connections
-D(5) = 2;                                % HMC connections
-D(6) = 4;                                % CVP connections
+D(5) = 2;                                % BCN connections
 
 % get model specific operators
 %==========================================================================
@@ -107,10 +102,8 @@ for i = 1:n
         nmm(i) = 3;
     elseif strcmp(model(i).source,'MMC')
         nmm(i) = 4;
-    elseif strcmp(model(i).source,'BAN')
+    elseif strcmp(model(i).source,'BCN')
         nmm(i) = 5;
-    elseif strcmp(model(i).source,'CVP')
-        nmm(i) = 6;
     end
 end
 

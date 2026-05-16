@@ -32,7 +32,7 @@ function DCM = spm_dcm_seq_dipfit(DCM, save_vol_sens)
 %    dipfit.datareg  - registration structure (for M/EEG)
 %__________________________________________________________________________
 
-% Karl Friston
+% Andrew Levy
 % Copyright (C) 2005-2022 Wellcome Centre for Human Neuroimaging
 
 
@@ -50,7 +50,6 @@ if nargin == 1
     save_vol_sens = 0;
 end
 
-
 % D - SPM data structure
 %--------------------------------------------------------------------------
 try
@@ -59,14 +58,11 @@ catch
     D  = spm_eeg_load(spm_file(DCM.xY.Dfile,'filename'));
 end
 
-
 % set options in dipfit
 %--------------------------------------------------------------------------
 try, spatial  = DCM.options.spatial;  catch, spatial  = 'IMG'; end
 try, location = DCM.options.location; catch, location = 0;     end
 try, symmetry = DCM.options.symmetry; catch, symmetry = 0;     end
-
-
 
 % Get modality specific information
 %--------------------------------------------------------------------------
@@ -102,7 +98,6 @@ for m = 1:numel(modality)
             end
 
             DCM.M.dipfit{m}.modality = modality{m};
-
             DCM.M.dipfit{m}.Nc       = length(DCM.xY.Ic(Im));
             DCM.M.dipfit{m}.Ic       = DCM.xY.Ic(Im);
             DCM.M.dipfit{m}.Iu       = Iu:Iu+(sum(Im)-1);
@@ -182,7 +177,7 @@ for d = 1:numel(DCM.M.dipfit)
         %------------------------------------------------------------------
         if save_vol_sens
             if ischar(DCM.M.dipfit{d}.vol)
-                DCM.M.dipfit{d}.vol = ft_read_headmodel(DCM.M.dipfit{d}.vol);
+                DCM.M.dipfit{d}.vol = ft_read_headmodel(DCM.M.dipfit{d}.vol ) ;
             end
 
             [DCM.M.dipfit{d}.vol, DCM.M.dipfit{d}.sens] = ft_prepare_vol_sens(DCM.M.dipfit{d}.vol, ...

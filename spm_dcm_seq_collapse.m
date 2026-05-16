@@ -1,4 +1,4 @@
-function DCM = dcm_seq_collapse(DCM)
+function DCM = spm_dcm_seq_collapse(DCM)
 % Collapse DCM.options.sequent.event(:).A, .B, .C into standard DCM.A, DCM.B, DCM.C
 % C_mode: 'reflect' (default) keeps distinct inputs, aligned by names if present
 %         'any' collapses all inputs into a single column
@@ -98,29 +98,55 @@ for e = 1:numel(ev)
 
     % B
     if isfield(ev(e),'B') && ~isempty(ev(e).B)
+
         if iscell(ev(e).B)
+
             this_nb = numel(ev(e).B);
+
             if this_nb == 1 && nbmax > 1
+
                 Bb = logical(ev(e).B{1});
+
+                if isfield(ev(e),'Bint') && ~isempty(ev(e).Bint)
+                    Bb = Bb | diag(~cellfun(@isempty,ev(e).Bint{1}));
+                end
+
+
+
                 if ~isequal(size(Bb), [n n])
                     error('B{1} in event(%d) is not %d-by-%d.', e, n, n);
                 end
                 for b = 1:nbmax
                     B{b} = B{b} | Bb;
                 end
+
             elseif this_nb == nbmax
+
                 for b = 1:nbmax
                     Bb = logical(ev(e).B{b});
+
+                    if isfield(ev(e),'Bint') && ~isempty(ev(e).Bint)
+                        Bb = Bb | diag(~cellfun(@isempty,ev(e).Bint{1}));
+                    end
+
                     if ~isequal(size(Bb), [n n])
                         error('B{%d} in event(%d) is not %d-by-%d.', b, e, n, n);
                     end
                     B{b} = B{b} | Bb;
                 end
+
             else
                 error('Number of B matrices in event(%d) is %d but expected %d.', e, this_nb, nbmax);
             end
+
         else
             Bb = logical(ev(e).B);
+
+            if isfield(ev(e),'Bint') && ~isempty(ev(e).Bint)
+                Bb = Bb | diag(~cellfun(@isempty,ev(e).Bint{1}));
+            end
+
+
             if ~isequal(size(Bb), [n n])
                 error('B in event(%d) is not %d-by-%d.', e, n, n);
             end

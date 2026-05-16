@@ -29,8 +29,7 @@ function DCM = spm_dcm_seq_data(DCM,ERP)
 %    DCM.xY.Hz       - Frequency bins (for Wavelet transform)
 %    DCM.options.h
 %__________________________________________________________________________
-
-% Karl Friston
+% Andrew Levy
 % Copyright (C) 2005-2022 Wellcome Centre for Human Neuroimaging
 
 

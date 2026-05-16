@@ -1,4 +1,4 @@
-function [U] = spm_dcm_seq_channelmodes(dipfit,Nm,xY,CVA)
+function [U,Nu] = spm_dcm_seq_channelmodes(dipfit,Nm,xY,CVA)
 
 
 % number of channels and modes
@@ -13,7 +13,7 @@ for d = 1:numel(dipfit)
 end
 
 % Build U with proper indexing
-uc = {};
+uc = {}; Nu = [];
 for d = 1:numel(dipfit)
     switch dipfit{d}.modality
         case {'EEG','MEG','MEGGRAD'}
@@ -22,17 +22,23 @@ for d = 1:numel(dipfit)
             else
                 u = spm_dcm_eeg_channelmodes(dipfit{d}, Nm);
             end
+            Nu = [Nu Nm];
         case 'HR'
-            % Nc = length(xY.2 Ic);
+
+            y     = (xY.y{1}(:,dipfit{d}.Iu));
+            s     = y'*y;
+            u     = 1/sqrt(s);
+
             % u = 1/(Nc_max-1);
-              u = 1/sqrt(Nc_max);
+            % u = 1/sqrt(Nc_max);
+            Nu = [Nu 1];
     end
-    
+
     % Create full-size matrix with u placed at correct rows
     [~, Nc_u]              = size(u);
     uc                  = sparse(Nc_max, Nc_u);
     uc(dipfit{d}.Iu, :) = u;
-    
+
     if d == 1
         U = uc;
     else

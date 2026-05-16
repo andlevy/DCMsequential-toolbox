@@ -91,7 +91,6 @@ if isfield(Ep,'int') && isfield(Ep.int{1},'G')
 end
 
 
-
 % Convert variances into structure and append covariances
 %--------------------------------------------------------------------------
 Cp         = spm_unvec(diag(Cp),Ep);
