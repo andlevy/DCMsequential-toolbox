@@ -171,7 +171,7 @@ if isstruct(model)
             iE.B = spm_zeros(iE.G);
             iC.B = spm_zeros(iC.G);
 
-            iC.B(model(i).B) = 1/16;
+            iC.B(model(i).B) = 1/8;
 
             if numel(iE.B) > numel(iE.G)
                 iE.G = iE.B;

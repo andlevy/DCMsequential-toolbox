@@ -65,8 +65,8 @@ E(2,:) = [64 4 64 8]*1000;               % CMC connections
 E(3,:) = [1.8 1.2 1.8 1.2]*100000;       % BGC connections
 E(4,:) = [.9 .9 .11 0]*100000;           % MMC connections
 % E(5,:) = [.5 1 1 .5]*100000;             % BCN connections
-E(5,:) = [1 .5 .5 .5]*100000;             % BCN connections
-% E(5,:) = [1 .5 1 .75]*100000;             % BCN connections
+% E(5,:) = [1 .5 .5 .5]*100000;             % BCN connections
+E(5,:) = [.4 .4 .6 .6]*100000;             % BCN connections
 
 if isfield(M,'ERP_E'); E(1,:)= M.ERP_E; end
 if isfield(M,'CMC_E'); E(2,:)= M.CMC_E; end
@@ -154,7 +154,6 @@ for i = 1:n
         A{k}(i,:) = E(nmm(i),k)*polarity(nmm(i),k)*A{k}(i,:);
     end
 end
-
 
 
 % assemble flow

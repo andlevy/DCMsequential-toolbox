@@ -176,7 +176,7 @@ for t = 1:length(v)
     end
 end
 
-if isfield(Ep,'int') && isfield(Ep.int{1},'T')
+if isfield(Ep,'int') && isfield(Ep.int{1},'T') && iscell(Ep.int{1}.T)
     for t = 1:length(v)
         for i = 1:nI
             QE.int{i}.T(t,:)  = spm_dcm_trajectory(Ep.int{i}.T,v(t,:),false);

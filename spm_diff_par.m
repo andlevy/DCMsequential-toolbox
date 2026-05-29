@@ -130,7 +130,7 @@ else
     % dfdxdxdx....
     %----------------------------------------------------------------------
     f0        = cell(1,length(n));
-    [f0{:}]   = spm_diff(f,x{:},n(1:end - 1),V);
+    [f0{:}]   = spm_diff_par(f,x{:},n(1:end - 1),V);
     p         = true;
     
     parfor i = 1:length(J)
