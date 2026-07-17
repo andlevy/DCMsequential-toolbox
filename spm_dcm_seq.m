@@ -209,7 +209,7 @@ end
 
 % Scale priors
 %--------------------------------------------------------------------------
-if ~isempty(priorvar), [pC,gC] = spm_dcm_priorvar(priorvar,pC,gC); end
+if ~isempty(priorvar), [pC,pE,gC] = spm_dcm_priorvar(priorvar,pC,pE,gC); end
 
 % Set prior correlations (locking trial effects and dipole orientations
 %--------------------------------------------------------------------------
@@ -250,31 +250,6 @@ end
 scale    = std(spm_vec(spm_fy_erp(xY.y,M) ));
 xY.y     = spm_unvec(spm_vec(xY.y)/scale,xY.y);
 xY.scale = xY.scale/scale;
-
-% % Per-modality scaling so each modality enters inversion with std ~1
-% %--------------------------------------------------------------------------
-% nMod          = numel(M.dipfit);
-% scale_per_mod = zeros(1, nMod);
-% 
-% % Apply spm_fy_erp once to the full data to get the feature-space view
-% y_fy = spm_fy_erp(xY.y, M);
-% iu   = 0;
-% for d = 1:nMod
-%     iu = iu(end)+1:iu(end)+Nu(d);   % channel indices for this modality
-% 
-%     % Extract this modality's features across all trials/conditions
-%     y_d = cellfun(@(yi) yi(:, iu), y_fy, 'UniformOutput', false);
-%     scale_per_mod(d) = std(spm_vec(y_d));
-% 
-%     % Apply scale to this modality's channels in the raw data
-%     for i = 1:numel(xY.y)
-%         xY.y{i}(:, iu) = xY.y{i}(:, iu) / scale_per_mod(d);
-%     end
-% end
-% 
-% % Record what was done (vector now, one entry per modality)
-% xY.scale = xY.scale ./ scale_per_mod;
-
 
 % likelihood model
 %==========================================================================
