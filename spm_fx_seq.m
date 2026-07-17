@@ -64,9 +64,9 @@ E(1,:) = [64 2 32 8]*1000;               % ERP connections
 E(2,:) = [64 4 64 8]*1000;               % CMC connections
 E(3,:) = [1.8 1.2 1.8 1.2]*100000;       % BGC connections
 E(4,:) = [.9 .9 .11 0]*100000;           % MMC connections
-% E(5,:) = [.5 1 1 .5]*100000;             % BCN connections
-% E(5,:) = [1 .5 .5 .5]*100000;             % BCN connections
-E(5,:) = [.4 .4 .6 .6]*100000;             % BCN connections
+% E(5,:) = [.4 .4 .6 .6]*100000;           % BCN connections
+% E(5,:) = [0 0 .6 .2]*100000;             % BCN connections
+E(5,:) = [0 0 .3 .1]*100000;             % BCN connections
 
 if isfield(M,'ERP_E'); E(1,:)= M.ERP_E; end
 if isfield(M,'CMC_E'); E(2,:)= M.CMC_E; end
@@ -112,7 +112,7 @@ end
 R     = 2/3;                      % gain of sigmoid activation function
 B     = 0;                        % bias or background (sigmoid)
 S     = @(x,R,B)1./(1 + exp(-R*x(:) + B)) - 1/(1 + exp(B));
-dSdx  = @(x,R,B)(R*exp(B - R*x(:)))./(exp(B - R*x(:)) + 1).^2;
+dSdx  = @(x,R,B)(R*exp(B - R*x))./(exp(B - R*x) + 1).^2;
 
 if isfield(P,'S') && iscell(P.S) && seq
     QS = spm_trajectory(P.S,v,true);
@@ -122,9 +122,8 @@ else
 end
 
 for i = 1:n
-    Sx{i} = S(x{i},R,B);          % sigmod firing rate function
+    Sx{i} = S(x{i},R,B);          % sigmoid firing rate function
 end
-
 
 % Extrinsic connections
 %--------------------------------------------------------------------------
@@ -184,16 +183,11 @@ for i = 1:n
     end
 
     if isfield(Q,'G') && iscell(Q.G)  && seq
-
         Q.G = log(spm_dcm_trajectory(Q.G,v,true));
-
-
     end
 
- 
     Q.C  = P.C(i,:);
     f{i} = fx{nmm(i)}(x{i},ui,Q,N);
-
 
     % extrinsic flow
     %----------------------------------------------------------------------
@@ -202,7 +196,10 @@ for i = 1:n
             if abs(A{k}(i,j)) > TOL
                 ik       = afferent(nmm(i),k);
                 jk       = efferent(nmm(j),k);
-                f{i}(ik) = f{i}(ik) + A{k}(i,j)*Sx{j}(jk);
+
+                src      = Sx{j}(jk);
+    
+                f{i}(ik) = f{i}(ik) + A{k}(i,j)*src;
             end
         end
     end
@@ -246,7 +243,6 @@ for i = 1:n
 
             if isfield(Q,'G') && iscell(Q.G)  && seq
                 Q.G = log(spm_dcm_trajectory(Q.G,v,true));
-
             end
 
             Q.C    = P.C(i,:);
@@ -257,10 +253,12 @@ for i = 1:n
             % extrinsic flow
             %--------------------------------------------------------------
             for k = 1:numel(A)
-                if A{k}(i,j) > TOL
+                if abs(A{k}(i,j)) > TOL
                     ik  = afferent(nmm(i),k);
                     jk  = efferent(nmm(j),k);
-                    dS  = dSdx(x{j}(jk),R,B);
+
+                    dS  = dSdx(x{j}(jk), R, B);
+
                     J{i,j}(ik,jk) = J{i,j}(ik,jk) + A{k}(i,j)*dS;
                 end
             end
