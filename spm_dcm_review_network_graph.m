@@ -254,7 +254,7 @@ end
 % ---------- nodes and labels ----------
 for i = 1:N
     rectangle('Position',[Ipos(1,i)-r, Ipos(2,i)-r, 2*r, 2*r], ...
-        'Curvature',[1 1], 'FaceColor',col_nmm(i,:), 'EdgeColor','k','LineWidth',3);
+        'Curvature',[1 1], 'FaceColor',col_nmm(i,:), 'EdgeColor','k','LineWidth',2);
 end
 for i = 1:numel(Sname)
     
@@ -266,7 +266,7 @@ for i = 1:numel(Sname)
 
     text(Ipos(1,i), Ipos(2,i), nodename, ...
         'HorizontalAlignment','center','VerticalAlignment','middle', ...
-        'fontweight','bold','FontSize',11);
+        'fontweight','bold','FontSize',10);
 
 end
 
