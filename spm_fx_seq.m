@@ -1,6 +1,5 @@
 function [f,J,Q] = spm_fx_seq(x,u,P,M)
 
-
 % Sequential scheme
 %--------------------------------------------------------------------------
 if size(u,2) ~= size(P.C,2)
@@ -17,7 +16,6 @@ if size(u,2) ~= size(P.C,2)
     seq = true;
 else
     seq = false;
-
 end
 
 % model-specific parameters
@@ -30,7 +28,6 @@ fx{2} = @spm_fx_cmc_2017;                % CMC model
 fx{3} = @spm_fx_bgt;                     % basal ganglia circuit
 fx{4} = @spm_fx_mmc;                     % motor micro circuit
 fx{5} = @spm_fx_bcn;                     % heart-rate micro circuit
-
 
 % indices of extrinsically coupled hidden states
 %--------------------------------------------------------------------------
@@ -49,7 +46,6 @@ afferent(4,:) = [2 4 8 0];               % targets of MMC connections
 efferent(5,:) = [13 3 0 0];              % sources of BCN connections
 afferent(5,:) = [0 0 2 6];               % targets of BCN connections
 
-
 % sign of extrinsically coupled states
 %--------------------------------------------------------------------------
 polarity(1,:) = [1  1  1  1]; 
@@ -64,9 +60,7 @@ E(1,:) = [64 2 32 8]*1000;               % ERP connections
 E(2,:) = [64 4 64 8]*1000;               % CMC connections
 E(3,:) = [1.8 1.2 1.8 1.2]*100000;       % BGC connections
 E(4,:) = [.9 .9 .11 0]*100000;           % MMC connections
-% E(5,:) = [.4 .4 .6 .6]*100000;           % BCN connections
-% E(5,:) = [0 0 .6 .2]*100000;             % BCN connections
-E(5,:) = [0 0 .3 .1]*100000;             % BCN connections
+E(5,:) = [0 0 .6 .2]*100000;             % BCN connections
 
 if isfield(M,'ERP_E'); E(1,:)= M.ERP_E; end
 if isfield(M,'CMC_E'); E(2,:)= M.CMC_E; end
@@ -91,7 +85,6 @@ end
 % get the neural mass models {'ERP','CMC'}
 %--------------------------------------------------------------------------
 n     = numel(x);
-
 model = M.model;
 for i = 1:n
     if     strcmp(model(i).source,'ERP')
@@ -205,7 +198,6 @@ for i = 1:n
     end
 end
 
-
 % concatenate flow
 %--------------------------------------------------------------------------
 f  = spm_vec(f);
@@ -268,9 +260,7 @@ end
 
 J  = spm_cat(J);
 
-
 if nargout < 3; return, end
-
 
 % delays
 %==========================================================================
