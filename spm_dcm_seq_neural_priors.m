@@ -98,6 +98,7 @@ if nargin==2 && isstruct(A) && isfield(A,'event')
             %--------------------------------------------------------------
             pE.K(m-1,:) = [0 0];
             pC.K(m-1,:) = [1/128 1/16];
+            % pC.K(m-1,:) = [1/128 1/32];
         end
 
         % Store per-event extrinsic/intrinsic families 

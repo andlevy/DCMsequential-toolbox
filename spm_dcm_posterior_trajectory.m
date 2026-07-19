@@ -5,15 +5,15 @@ M            = DCM.M;
 U            = DCM.xU;
 Ep           = DCM.Ep;
 Cp           = DCM.Cp;
+pst          = (1:M.ns)*U(1).dt;
+u            = spm_seq_u(pst, Ep, M);
 
-pst = (1:M.ns)*U(1).dt;
-u   = spm_seq_u(pst, Ep, M);
 if size(u,2) ~= size(Ep.C,2)
     Nu = size(Ep.C,2);
     v  = u(:,Nu+1:end);
 end
 
-% Extract covariances 
+% Extract covariances
 %==========================================================================
 nevent       = numel(Ep.A);
 nA           = numel(Ep.A{1});
@@ -28,7 +28,9 @@ AB = {};
 for iE = 1:nevent
     for iA = 1:nA
         for iB = 1:nB
+
             AB{iA}{iB}{iE,1} = zeros(nS,nS);
+
             for iS1 = 1:nS
                 for iS2 = 1:nS
 
@@ -107,11 +109,12 @@ Q.B      = arrayfun(@(a) Q.B(:,a), 1:size(Q.B,2), 'UniformOutput', false);
 C.B      = vertcat(Cp.B{:});
 C.B      = arrayfun(@(a) C.B(:,a), 1:size(C.B,2), 'UniformOutput', false);  % Fixed typo here
 
-C.AB    = AB;
-
+C.AB     = AB;
 
 if isfield(Ep,'int') && isfield(Ep.int{1},'G')
+    
     nI                = numel(Ep.int);
+
     for i = 1:nI
         Q.int{i}.G    = Ep.int{i}.G;
         C.int{i}.G    = Cp.int{i}.G;
@@ -125,6 +128,7 @@ if isfield(Ep,'int') && isfield(Ep.int{1},'G')
     end
 
     C.GB    = GB;
+
 end
 
 % Synaptic trajectories
@@ -172,7 +176,6 @@ for t = 1:length(v)
                 Cov.int{i}.GB{b}(t,:) = spm_dcm_trajectory(C.int{i}.GB,v(t,:),false);
             end
         end
-
     end
 end
 
@@ -195,7 +198,7 @@ for x = 1:length(X)
 
         for a = 1:nA
             QE.AB{x}{a} = QE.A{a} + Xx(b)*QE.B{b};
-            QC.AB{x}{a} = QC.A{a} + Xx(b)^2*QC.B{b} + 2*Xx(b)*Cov.AB{a}{b}; 
+            QC.AB{x}{a} = QC.A{a} + Xx(b)^2*QC.B{b} + 2*Xx(b)*Cov.AB{a}{b};
         end
 
         if isfield(Ep,'int')
@@ -210,7 +213,6 @@ for x = 1:length(X)
 
             end
         end
-
     end
 end
 
