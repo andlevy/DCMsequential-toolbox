@@ -1,0 +1,46 @@
+% Requires \usepackage{booktabs}
+\begin{table}[htbp]
+\centering
+\caption{DCM for Sequential Responses Toolbox: functions}
+\label{tab:dcm_seq_functions}
+\begin{tabular}{ll}
+\toprule
+Function & Description \\
+\midrule
+\texttt{spm\_cell} & Splits a matrix into cells like \texttt{M.x} \\
+\texttt{spm\_dcm\_empirical\_priors} & Empirical priors from inverted DCMs \\
+\texttt{spm\_dcm\_peb\_nmm} & PEB empirical priors (work in progress) \\
+\texttt{spm\_dcm\_posterior\_trajectory} & Posterior trajectory moments \\
+\texttt{spm\_dcm\_priorcorr} & Sets prior correlations \\
+\texttt{spm\_dcm\_priorvar} & Sets prior variances \\
+\texttt{spm\_dcm\_review\_network\_graph} & Network graph plot per event \\
+\texttt{spm\_dcm\_seq} & Model specification and inversion \\
+\texttt{spm\_dcm\_seq\_channelmodes} & Channel modes, including HR channels \\
+\texttt{spm\_dcm\_seq\_collapse} & Collapses event-specific A, B, C into standard DCM A, B, C \\
+\texttt{spm\_dcm\_seq\_data} & Data preparation \\
+\texttt{spm\_dcm\_seq\_dipfit} & Forward model specification \\
+\texttt{spm\_dcm\_seq\_neural\_priors} & Neural priors \\
+\texttt{spm\_dcm\_seq\_sensitivity} & Source sensitivity to parameter contrasts \\
+\texttt{spm\_dcm\_seq\_x\_neural} & Initial states and equations of motion \\
+\texttt{spm\_dcm\_synaptic\_trajectory} & Synaptic parameter trajectories \\
+\texttt{spm\_dcm\_trajectory} & Parameter trajectory across events \\
+\texttt{spm\_diff\_par} & Parallel \texttt{spm\_diff} \\
+\texttt{spm\_eeg\_erp\_tukey} & ERP preprocessing with a Tukey window \\
+\texttt{spm\_fx\_seq} & Equations of motion with event-varying parameters \\
+\texttt{spm\_gen\_seq} & Generative model \\
+\texttt{spm\_int\_S} & Integrator, updates at input events \\
+\texttt{spm\_int\_U} (in \texttt{docs/}) & Reference copy of SPM's \texttt{spm\_int\_U} \\
+\texttt{spm\_L\_com\_priors} & COM observation priors \\
+\texttt{spm\_L\_erp\_priors} & ECD/IMG/LFP observation priors \\
+\texttt{spm\_L\_seq\_priors} & Observation priors, multimodal \\
+\texttt{spm\_lx\_com} & COM observation model \\
+\texttt{spm\_lx\_seq} & Observation model, multimodal \\
+\texttt{spm\_nlsi\_N\_par} & Parallel \texttt{spm\_nlsi\_N} \\
+\texttt{spm\_null\_u} & Null input \\
+\texttt{spm\_scp\_u} & Skew-normal input \\
+\texttt{spm\_seq\_Q} & Trial-specific parameters \\
+\texttt{spm\_seq\_u} & Inputs with sigmoid event transitions \\
+\texttt{spm\_tukey} & Tukey window \\
+\bottomrule
+\end{tabular}
+\end{table}

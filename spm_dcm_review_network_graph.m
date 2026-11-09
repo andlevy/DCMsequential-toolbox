@@ -73,7 +73,6 @@ if seq
             fig{end}.Name = ['network ' sprintf('%02d ',e) lower(event(e).name) ];
         end
 
-
     end
 
 else
@@ -92,7 +91,6 @@ else
     fig = draw_network(Ipos,Sname,A,B,C,Q);
 
 end
-
 
 end
 %% ========================================================================

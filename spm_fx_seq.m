@@ -108,7 +108,7 @@ S     = @(x,R,B)1./(1 + exp(-R*x(:) + B)) - 1/(1 + exp(B));
 dSdx  = @(x,R,B)(R*exp(B - R*x))./(exp(B - R*x) + 1).^2;
 
 if isfield(P,'S') && iscell(P.S) && seq
-    QS = spm_trajectory(P.S,v,true);
+    QS = spm_dcm_trajectory(P.S,v,true);
     R   = R.*QS;
 else
     R   = R.*exp(P.S);              % posterior gain

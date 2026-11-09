@@ -32,7 +32,7 @@ try, M.par; catch, M.par = false;       end
 % peristimulus time
 %--------------------------------------------------------------------------
 if nargout > 1
-    pst = (1:M.ns)*U.dt - M.ons/1000;
+    pst = (1:M.ns)*U.dt - M.ons(1)/1000;
 end
 
 % within-trial (exogenous) inputs
